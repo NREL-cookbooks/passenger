@@ -38,7 +38,10 @@ execute "passenger_nginx_module" do
       --extra-configure-flags='#{configure_flags}'
   }
   not_if "#{nginx_install}/sbin/nginx -V 2>&1 | grep '#{node[:languages][:ruby][:gems_dir]}/gems/passenger-#{node[:passenger][:version]}/ext/nginx'"
-  notifies :restart, resources(:service => "nginx")
+
+  # Make sure nginx is running and perform the binary upgrade if necessary.
+  notifies :start, "service[nginx]"
+  notifies :run, "bash[nginx_binary_upgrade]"
 end
 
 template "#{nginx_dir}/conf.d/passenger.conf" do
@@ -46,5 +49,5 @@ template "#{nginx_dir}/conf.d/passenger.conf" do
   owner "root"
   group "root"
   mode "0644"
-  notifies :restart, resources(:service => "nginx")
+  notifies :reload, "service[nginx]"
 end
