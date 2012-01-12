@@ -47,6 +47,7 @@ template "#{node[:apache][:dir]}/mods-available/passenger.load" do
   owner "root"
   group "root"
   mode "0644"
+  notifies :reload, "service[apache2]"
 end
 
 template "#{node[:apache][:dir]}/mods-available/passenger.conf" do
@@ -54,6 +55,7 @@ template "#{node[:apache][:dir]}/mods-available/passenger.conf" do
   owner "root"
   group "root"
   mode "0644"
+  notifies :reload, "service[apache2]"
 end
 
 apache_module "passenger"
