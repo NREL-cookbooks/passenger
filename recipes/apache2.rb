@@ -38,7 +38,7 @@ end
 node.set[:passenger][:module_path] = "#{node[:passenger][:root_path]}/ext/apache2/mod_passenger.so"
 
 execute "passenger_apache2_module" do
-  command "/usr/local/bin/rvm default exec passenger-install-apache2-module -a"
+  command "/usr/local/rvm/bin/rvm default exec passenger-install-apache2-module -a"
   creates node[:passenger][:module_path]
 end
 

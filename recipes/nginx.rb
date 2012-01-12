@@ -32,7 +32,7 @@ nginx_dir = node[:nginx][:dir]
 
 execute "passenger_nginx_module" do
   command %Q{
-    /usr/local/bin/rvm default exec passenger-install-nginx-module \
+    /usr/local/rvm/bin/rvm default exec passenger-install-nginx-module \
       --auto --prefix=#{nginx_install} \
       --nginx-source-dir=#{Chef::Config[:file_cache_path]}/nginx-#{nginx_version} \
       --extra-configure-flags='#{configure_flags}'
