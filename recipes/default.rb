@@ -23,7 +23,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-include_recipe "rvm::install"
+include_recipe "rbenv::global_version"
 include_recipe "build-essential"
 
 # Install the needed build dependencies for passenger.
@@ -36,8 +36,9 @@ packages.each do |pkg|
   package pkg
 end
 
-rvm_gem "passenger" do
+rbenv_gem "passenger" do
   version node[:passenger][:version]
+  ruby_version node[:rbenv][:install_global_version]
 end
 
 node.set[:passenger][:root_path] = "#{node[:languages][:ruby][:gems_dir]}/gems/passenger-#{node[:passenger][:version]}"
