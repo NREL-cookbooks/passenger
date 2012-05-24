@@ -25,23 +25,23 @@
 include_recipe "nginx::source"
 include_recipe "passenger"
 
-configure_flags = node[:nginx][:configure_flags].join(" ")
-nginx_install = node[:nginx][:install_path]
+configure_flags = (node[:nginx][:source][:default_configure_flags] | node[:nginx][:configure_flags]).join(" ")
+nginx_prefix = node[:nginx][:source][:prefix]
 nginx_version = node[:nginx][:version]
 nginx_dir = node[:nginx][:dir]
 
 execute "passenger_nginx_module" do
   command %Q{
     /usr/local/rvm/bin/rvm default exec passenger-install-nginx-module \
-      --auto --prefix=#{nginx_install} \
+      --auto --prefix=#{nginx_prefix} \
       --nginx-source-dir=#{Chef::Config[:file_cache_path]}/nginx-#{nginx_version} \
       --extra-configure-flags='#{configure_flags}'
   }
-  not_if "#{nginx_install}/sbin/nginx -V 2>&1 | grep '#{node[:languages][:ruby][:gems_dir]}/gems/passenger-#{node[:passenger][:version]}/ext/nginx'"
+  not_if "#{node[:nginx][:binary]} -V 2>&1 | grep '#{node[:languages][:ruby][:gems_dir]}/gems/passenger-#{node[:passenger][:version]}/ext/nginx'"
 
   # Make sure nginx is running and perform the binary upgrade if necessary.
   notifies :start, "service[nginx]"
-  notifies :run, "bash[nginx_binary_upgrade]"
+  notifies :upgrade, "service[nginx]"
 end
 
 template "#{nginx_dir}/conf.d/passenger.conf" do
